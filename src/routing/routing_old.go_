@@ -1,0 +1,153 @@
+package routing
+
+import (
+    "os"
+	"golang.org/x/crypto/bcrypt"
+	"net/http"
+	"github.com/gin-contrib/sessions"
+	"github.com/gin-contrib/sessions/cookie"
+    //"github.com/gin-contrib/static"
+	"github.com/gin-gonic/gin"
+    "static_auth/database"
+    "strings"
+)
+
+//  ──────────────────────────────────────────────────────────────────────────
+
+type Credentials struct {
+	Password string `json:"password"`
+	Username string `json:"username"`
+}
+
+//  ──────────────────────────────────────────────────────────────────────────
+
+func InitRouter() *gin.Engine {
+	router := gin.Default()
+
+	store := cookie.NewStore([]byte(os.Getenv("SA_SECRET_KEY")))  // need to use env file for secrets
+	router.Use(sessions.Sessions("static_auth_sessions", store))
+
+	router.Static("/static", "website/static")
+    router.LoadHTMLGlob("website/templates/*.html")
+
+    // public
+    public := router.Group("/auth")
+    {
+        public.GET("/signup", show_signup)
+        public.POST("/signup", signup)
+        public.GET("/login", show_login)
+        public.POST("/login", login)
+        public.GET("/logout", logout)
+        //public.GET("/", show_login)
+    }
+
+    if strings.HasPrefix(c.Request.RequestURI, "/auth") {
+        return 
+    // private
+    //secured := router.Group("/").Use(auth)
+    //secured := router.Group("/private").Use(auth)
+    //{
+        //secured.Use(static.Serve("/", static.LocalFile("website/html", true)))
+    //}
+
+    secured := router.Group("/").Use(auth)
+    secured.Static("/", "website/html")
+
+    //router.Use(static.Serve("/", static.LocalFile("website/html", true)))
+    //router.Use(auth)
+
+    router.NoRoute(func(c *gin.Context) {
+        c.HTML(404, "404.html", nil)
+    })
+
+	return router
+}
+
+
+func show_signup(c *gin.Context) {
+    if allow_signup := os.Getenv("SA_SIGNUP"); allow_signup == "True" {
+        c.HTML(http.StatusOK, "signup.html", nil)
+    } else {
+        c.HTML(http.StatusOK, "no_signup.html", nil)
+    }
+}
+
+
+func show_login(c *gin.Context) {
+
+    session := sessions.Default(c)
+    if session.Get("authenticated") == true {
+        //c.Redirect(301, "/private")
+
+    } else {
+        c.HTML(http.StatusOK, "login.html", nil)
+    }
+}
+
+
+func signup(c *gin.Context) {
+
+    if allow_signup := os.Getenv("SA_SIGNUP"); allow_signup == "True" {
+
+        username := c.PostForm("username")
+        password := c.PostForm("password")
+        confirm_password := c.PostForm("confirm_password")
+
+        if confirm_password == password {
+
+            // hashing password
+            hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), 4)
+            if err != nil {
+                c.AbortWithError(500, err)
+            }
+
+            database.CreateUser(username, string(hashedPassword))
+            //c.Redirect(301, "/login")
+        }
+
+    } else {
+        return
+    }
+}
+
+
+func login(c *gin.Context) {
+
+    username := c.PostForm("username")
+    password := c.PostForm("password")
+
+	storePassword := database.GetFromBucket("Users", username)
+
+    if err := bcrypt.CompareHashAndPassword([]byte(storePassword), []byte(password)); err != nil {
+        c.HTML(401, "login_bad.html", nil)
+
+	} else {
+		session := sessions.Default(c)
+		session.Set("authenticated", true)
+		session.Save()
+
+        //c.Redirect(301, "/private")
+	}
+}
+
+
+func logout(c *gin.Context) {
+    
+	session := sessions.Default(c)
+    session.Set("authenticated", false)
+	session.Save()
+    c.HTML(http.StatusOK, "logout.html", nil)
+}
+
+
+func auth(c *gin.Context) {
+    
+    session := sessions.Default(c)
+    if session.Get("authenticated") == true {
+        c.Next()
+    } else {
+        c.HTML(401, "401.html", nil)
+        c.AbortWithStatus(401)
+    }
+}
+

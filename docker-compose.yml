@@ -1,0 +1,17 @@
+version: "3.9"
+
+services:
+
+  static_auth:
+    image: static_auth:0.1.0
+    restart: unless-stopped
+    environment:
+      SA_SIGNUP: "${SA_SIGNUP}"
+      SA_SECRET_KEY: "${SA_SECRET_KEY}"
+      SA_DATABASE: "${SA_DATABASE}"
+      SA_URL: "${SA_URL}"
+    volumes:
+      - ./website:/static_auth/website
+    ports:
+      - 8080:8080
+

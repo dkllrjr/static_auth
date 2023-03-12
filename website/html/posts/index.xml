@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Posts on Example Static Site</title>
+    <link>http://example.org/posts/</link>
+    <description>Recent content in Posts on Example Static Site</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sun, 12 Mar 2023 15:30:49 +0100</lastBuildDate><atom:link href="http://example.org/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Example Page</title>
+      <link>http://example.org/posts/example_post/</link>
+      <pubDate>Sun, 12 Mar 2023 15:30:49 +0100</pubDate>
+      
+      <guid>http://example.org/posts/example_post/</guid>
+      <description>Here is the example static website for static_auth.</description>
+    </item>
+    
+  </channel>
+</rss>
