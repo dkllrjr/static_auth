@@ -37,14 +37,14 @@ services:
 
 With a `.env` file, set the following variables (all are required):
 
-- `SA_SIGNUP`: Set to `True` or `False`. This variable determines whether or not to prompt the user at startup to insert a new user.
+- `SA_SIGNUP`: Set to `True` or `False`. This variable determines whether or not to prompt the user at startup to insert a new user. If this is set to true, you must run `docker-compose run static_auth` to enter in the username and password.
 - `SA_DATABASE`: Set to the name of your [`bbolt` database](.https://github.com/etcd-io/bbolt).
 - `SA_URL`: Set to your desired URL.
 
 Here's an example:
 
 ```
-export SA_SIGNUP=True
+export SA_SIGNUP=False
 export SA_DATABASE=users.db
 export SA_URL=0.0.0.0:8080
 ```
