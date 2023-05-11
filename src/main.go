@@ -11,12 +11,8 @@ import (
 func main() {
 	
 	// database
-	database.InitDB("website/" + os.Getenv("SA_DATABASE"))
+	database.InitDB("database/" + os.Getenv("SA_DATABASE"))
 	defer database.DB.Close()
-
-	// router
-	//router := routing.InitRouter()
-	//router.Run(os.Getenv("SA_URL"))
 
 	// router
 	router := routing.InitRouter()

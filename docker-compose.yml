@@ -14,7 +14,8 @@ services:
       SA_DATABASE: "${SA_DATABASE}"
       SA_URL: "${SA_URL}"
     volumes:
-      - ./website_notebook:/static_auth/website
+      - ./website:/static_auth/website
+      - ./database:/static_auth/database
     ports:
       - 8080:8080
 

@@ -15,7 +15,7 @@ The program serves the static files found in the directory of your choice, assum
 |       +-- example_post.html
 ```
 
-A `docker-compose.yml` file has been provided as an example of how to run the program:
+A `docker-compose.yml` file has been provided as an example of how to run the program (replace your architecture with the proper one):
 
 ```
 version: "3.9"
@@ -23,7 +23,7 @@ version: "3.9"
 services:
 
   static_auth:
-    image: static_auth:0.1.0
+    image: static_auth:0.1.1-arm64
     restart: unless-stopped
     environment:
       SA_SIGNUP: "${SA_SIGNUP}"
